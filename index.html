@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mike Akpan | Contemporary Artist</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@100;300;400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'royal': '#4169E1',
+                        'royal-dark': '#2B4FB0',
+                        'dark-grey': '#1a1a1a',
+                        'silver': '#C0C0C0',
+                        'silver-light': '#e2e8f0',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root { scroll-behavior: smooth; }
+        body { background-color: #1a1a1a; color: #f3f4f6; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        .font-serif { font-family: 'Cormorant Garamond', serif; }
+        .font-serif-elegant { font-family: 'Playfair Display', serif; }
+        
+        .page-transition {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .hidden-page {
+            display: none;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        .active-page {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #4169E1; }
+
+        /* Navigation active state */
+        .nav-link.active { color: #4169E1; }
+        .nav-link.active span { width: 100%; }
+
+        .group:hover .title-royal { color: #4169E1; }
+
+        /* Modal styling */
+        #artwork-modal {
+            background-color: rgba(26, 26, 26, 0.98);
+        }
+        
+        /* Interactive elements */
+        .btn-royal {
+            background-color: #4169E1;
+            color: white;
+            transition: all 0.3s ease;
+            font-weight: 900;
+        }
+        .btn-royal:hover {
+            background-color: #ffffff;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+        }
+
+        /* Animated Hamburger */
+        .menu-btn {
+            position: relative;
+            width: 30px;
+            height: 20px;
+            cursor: pointer;
+            z-index: 110;
+        }
+        .menu-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: #4169E1;
+            transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        }
+        .line-1 { top: 0; }
+        .line-2 { top: 50%; transform: translateY(-50%); }
+        .line-3 { bottom: 0; }
+        
+        .menu-btn.active .line-1 { transform: translateY(9px) rotate(45deg); }
+        .menu-btn.active .line-2 { opacity: 0; transform: translateX(-20px); }
+        .menu-btn.active .line-3 { transform: translateY(-9px) rotate(-45deg); }
+    </style>
+</head>
+<body>
+
+    <!-- PERSISTENT NAVIGATION -->
+    <nav id="main-nav" class="fixed w-full z-[60] transition-all duration-500 px-6 md:px-12 py-6 bg-transparent">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div onclick="navigateTo('home')" class="text-xl md:text-2xl font-serif tracking-[0.3em] text-royal uppercase cursor-pointer font-bold">
+                Mike Akpan
+            </div>
+            
+            <div class="hidden lg:flex space-x-10 text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400">
+                <button onclick="navigateTo('home')" class="nav-link active relative group">Home<span class="absolute -bottom-1 left-0 h-[1px] bg-royal transition-all w-full"></span></button>
+                <button onclick="navigateTo('about')" class="nav-link relative group">About<span class="absolute -bottom-1 left-0 h-[1px] bg-royal transition-all w-0 group-hover:w-full"></span></button>
+                <button onclick="navigateTo('gallery')" class="nav-link relative group">Gallery<span class="absolute -bottom-1 left-0 h-[1px] bg-royal transition-all w-0 group-hover:w-full"></span></button>
+                <button onclick="navigateTo('bibliography')" class="nav-link relative group">Bibliography<span class="absolute -bottom-1 left-0 h-[1px] bg-royal transition-all w-0 group-hover:w-full"></span></button>
+                <button onclick="navigateTo('membership')" class="nav-link relative group">Membership<span class="absolute -bottom-1 left-0 h-[1px] bg-royal transition-all w-0 group-hover:w-full"></span></button>
+                <button onclick="navigateTo('contact')" class="nav-link relative group">Contacts<span class="absolute -bottom-1 left-0 h-[1px] bg-royal transition-all w-0 group-hover:w-full"></span></button>
+            </div>
+
+            <!-- Enhanced Animated Menu Button -->
+            <button class="menu-btn" id="nav-toggle" onclick="toggleMenu()">
+                <div class="menu-line line-1"></div>
+                <div class="menu-line line-2"></div>
+                <div class="menu-line line-3"></div>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MOBILE MENU OVERLAY -->
+    <div id="mobile-menu" class="fixed inset-0 z-[100] bg-dark-grey p-12 flex flex-col items-center justify-center space-y-8 hidden opacity-0 transition-all duration-500 backdrop-blur-xl bg-opacity-95">
+        <button onclick="navigateTo('home')" class="text-4xl md:text-6xl font-serif text-white hover:text-royal transition-colors">Home</button>
+        <button onclick="navigateTo('about')" class="text-4xl md:text-6xl font-serif text-white hover:text-royal transition-colors">About</button>
+        <button onclick="navigateTo('gallery')" class="text-4xl md:text-6xl font-serif text-white hover:text-royal transition-colors">Gallery</button>
+        <button onclick="navigateTo('bibliography')" class="text-4xl md:text-6xl font-serif text-white hover:text-royal transition-colors">Bibliography</button>
+        <button onclick="navigateTo('membership')" class="text-4xl md:text-6xl font-serif text-white hover:text-royal transition-colors">Membership</button>
+        <button onclick="navigateTo('contact')" class="text-4xl md:text-6xl font-serif text-white hover:text-royal transition-colors">Contact</button>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="content-area">
+        
+        <!-- HOME PAGE -->
+        <section id="page-home" class="page-transition active-page">
+            <div class="relative h-screen flex flex-col items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 z-0">
+                    <img src="https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80&w=1920" 
+                         class="w-full h-full object-cover grayscale brightness-[0.4] scale-110" 
+                         alt="Artist Studio Workshop">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-royal/20 to-dark-grey z-10"></div>
+                </div>
+                
+                <div class="relative z-20 text-center px-6 max-w-5xl">
+                    <div class="mb-6">
+                        <span class="text-royal border border-royal/30 uppercase tracking-[0.5em] text-[10px] md:text-xs font-bold px-6 py-2 rounded-full backdrop-blur-md text-center inline-block">
+                            Welcome to the digital sanctuary of
+                        </span>
+                    </div>
+                    
+                    <h1 class="text-6xl md:text-[10rem] font-serif text-white mb-8 leading-none">
+                        Mike <span class="italic text-royal">Akpan</span>
+                    </h1>
+                    
+                    <p class="text-sm md:text-lg font-light tracking-[0.3em] mb-14 uppercase text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                        A master of Ibibio-inspired abstract narratives, connecting ancestral silence with contemporary noise.
+                    </p>
+                    
+                    <div class="flex flex-col md:flex-row gap-8 justify-center items-center">
+                        <!-- Updated onclick to trigger the navigation menu instead of a direct page jump -->
+                        <button onclick="toggleMenu(true)" class="group relative px-16 py-5 btn-royal uppercase text-[10px] tracking-[0.3em] shadow-2xl">
+                            Explore Mike Akpan
+                            <span class="absolute -bottom-2 -right-2 w-full h-full border border-royal/30 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT PAGE -->
+        <section id="page-about" class="page-transition hidden-page pt-32 pb-24 px-6 max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row gap-20 items-start">
+                <div class="w-full lg:w-1/3 lg:sticky lg:top-32">
+                    <div class="relative">
+                        <div class="absolute -inset-4 border border-royal/30 translate-x-4 translate-y-4"></div>
+                        <div class="relative z-10 overflow-hidden aspect-[4/5] bg-[#222] border border-silver/20">
+                            <img src="https://i.ibb.co/yc05VQ5K/1774743236091.png" 
+                                 class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-1000" 
+                                 alt="Mike Akpan Portrait">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-2/3 space-y-16">
+                    <header>
+                        <span class="text-royal uppercase tracking-[0.4em] text-xs font-bold block mb-4">The Artist Biography</span>
+                        <h2 class="text-5xl md:text-8xl font-serif text-white">Universal Master</h2>
+                    </header>
+                    <div class="prose prose-invert prose-lg text-gray-400 font-light leading-relaxed space-y-8">
+                        <p class="text-2xl text-white/90 font-serif italic border-l-2 border-royal/40 pl-8 py-2">
+                            "After God's creation, the remaining part was left for an artist."
+                        </p>
+                        <p>
+                            Akparawa Mike Akpan is a Nigerian artist whose medium and style cut across cultures. He has successfully freed himself from ethnic constraints that often stifle creative expression, producing outstanding works with truly universal themes. Drawing inspiration from the richness of his Ibibio culture, he displays a complete mastery and control of his chosen medium: oil on canvas.
+                        </p>
+                        <p>
+                            Born in 1970 into the family of <span class="text-white italic">Nung Emem</span> in Ndiya, Nsit Ubium L.G.A., Akwa Ibom State, Mike's imagination was tickled from childhood by traditional folk tales. He grew up among established traditional wood carvers, sculptors, and weavers of colorful raffia mats, inheriting a legacy of intricate forms and vivid colors.
+                        </p>
+                        <p>
+                            Mastering the abstract oil painting style, Mike's work is celebrated for its richness, freshness, and clarity. His process is one of visionary motivation; each visual feast of colors he presents leaves his audience completely overwhelmed. Intellectually inclined admirers often find themselves stimulated into "mental gymnastics" trying to decode Mike's intricately woven forms.
+                        </p>
+                        <p class="text-2xl text-white font-serif italic border-l-2 border-royal/40 pl-8 py-2">
+                            "His work invites both immediate emotional response and deeper reflection, offering viewers a rich visual experience shaped by inspiration and cultural memory."
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t border-white/10">
+                        <div>
+                            <h3 class="text-xl font-serif mb-6 text-white flex items-center gap-3">
+                                <i data-lucide="graduation-cap" class="text-royal"></i> Academic Training
+                            </h3>
+                            <ul class="text-sm space-y-4 text-gray-400 font-light">
+                                <li class="flex gap-4"><span class="text-royal">●</span><span>OND Visual & HND Graphics — Yaba College of Technology, Lagos</span></li>
+                                <li class="flex gap-4"><span class="text-royal">●</span><span>Professional Apprenticeship under Ekong Ekefrey</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-serif mb-6 text-white flex items-center gap-3">
+                                <i data-lucide="award" class="text-royal"></i> Distinguished Awards
+                            </h3>
+                            <ul class="text-sm space-y-4 text-gray-400 font-light">
+                                <li class="flex gap-4"><span class="text-royal">●</span><span>Best Artist — Ikenga Gallery, Connecticut State, USA (1991)</span></li>
+                                <li class="flex gap-4"><span class="text-royal">●</span><span>Best Artist — Afrikart Limited, Lagos (1990)</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t border-white/10">
+                        <div>
+                            <h4 class="text-xl font-serif mb-6 text-white flex items-center gap-3">
+                                <i data-lucide="users" class="text-royal"></i> Affiliations
+                            </h4>
+                            <ul class="space-y-4 text-sm text-silver">
+                                <li>• Society of Nigerian Artists (SNA)</li>
+                                <li>• AACA Association, New York</li>
+                                <li>• Ekefrey Art School</li>
+                                <li>• Attached Artist, National Gallery of Art</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/[0.02] p-10 border border-white/5 italic text-gray-400 leading-loose">
+                        <h3 class="text-lg font-serif mb-4 text-royal uppercase tracking-widest font-bold">Professional Ethos</h3>
+                        "Mike’s involvement in arts is by no means prodigious but has an element of visionary motivations and growth. Each time his audience come, they will be completely overwhelmed by the visual feast of colors."
+                    </div>
+
+                    <div class="space-y-16 pt-12 border-t border-white/10">
+                        <section>
+                            <h3 class="text-3xl font-serif mb-8 flex items-center gap-4 text-white">
+                                <i data-lucide="history" class="text-royal"></i> Solo Exhibitions
+                            </h3>
+                            <div class="grid gap-4" id="solo-exhibitions-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </section>
+                        
+                        <section>
+                            <h3 class="text-3xl font-serif mb-8 flex items-center gap-4 text-white">
+                                <i data-lucide="history" class="text-royal"></i> Group Exhibitions
+                            </h3>
+                            <div class="grid gap-4" id="group-exhibitions-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </section>
+
+                        <!-- SELECTED PRESS SECTION -->
+                        <section class="pt-12 border-t border-white/10">
+                            <h3 class="text-3xl font-serif mb-8 flex items-center gap-4 text-white">
+                                <i data-lucide="newspaper" class="text-royal"></i> Selected Press
+                            </h3>
+                            <p class="text-gray-400 leading-relaxed font-light italic text-sm">
+                                Featured in <span class="text-silver non-italic">Vanguard</span> (1996–1997); <span class="text-silver non-italic">Sunday Vanguard</span> (1996–1997); <span class="text-silver non-italic">The Guardian</span> (1996–1997, 2001); <span class="text-silver non-italic">ThisDay</span> (1996–1997); <span class="text-silver non-italic">National Concord</span> (1996–1997); <span class="text-silver non-italic">Newswatch</span> (1996); <span class="text-silver non-italic">Post Express</span> (1996); <span class="text-silver non-italic">Third Eye</span> (1996); <span class="text-silver non-italic">The Diet</span> (1997); <span class="text-silver non-italic">Source Review</span> (1997); <span class="text-silver non-italic">Saturday Punch</span> (1997); <span class="text-silver non-italic">Daily Champion</span> (2001); <span class="text-silver non-italic">Weekend Pioneer</span> (2001); <span class="text-silver non-italic">National Interest</span> (2001); <span class="text-silver non-italic">The Anchor</span> (2001).
+                            </p>
+                        </section>
+
+                        <!-- COLLECTIONS / COMMISSIONS SECTION -->
+                        <section class="pt-12 border-t border-white/10">
+                            <h3 class="text-3xl font-serif mb-8 flex items-center gap-4 text-white">
+                                <i data-lucide="briefcase" class="text-royal"></i> Collections / Commissions
+                            </h3>
+                            <ul class="text-sm space-y-4 text-gray-400 font-light">
+                                <li class="flex gap-4"><span class="text-royal">●</span><span>ExxonMobil / Mobil Producing Nigeria</span></li>
+                                <li class="flex gap-4"><span class="text-royal">●</span><span>Vanguard Media Ltd</span></li>
+                                <li class="flex gap-4"><span class="text-royal">●</span><span>5 Star Hotel, Uyo</span></li>
+                            </ul>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BIBLIOGRAPHY PAGE -->
+        <section id="page-bibliography" class="page-transition hidden-page pt-40 pb-24 px-6 max-w-7xl mx-auto">
+            <header class="mb-24 text-center md:text-left">
+                <h2 class="text-6xl md:text-8xl font-serif-elegant mb-6 italic text-royal">Bibliography</h2>
+                <div class="flex items-center gap-4 text-gray-500 tracking-[0.4em] uppercase text-[10px] font-bold">
+                    <i data-lucide="newspaper" class="text-royal w-4 h-4"></i> Press & Curatorial Archive
+                </div>
+            </header>
+            <div id="bibliography-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-16">
+                <!-- JS will inject entries here -->
+            </div>
+        </section>
+
+        <!-- GALLERY PAGE -->
+        <section id="page-gallery" class="page-transition hidden-page pt-32 pb-24">
+            <div class="max-w-7xl mx-auto px-6 mb-16 text-center">
+                <h2 class="text-5xl font-serif italic mb-4 text-white">Arts Gallery</h2>
+                <div class="flex flex-wrap justify-center gap-8 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-white/10 pb-6 max-w-xl mx-auto">
+                    <button class="text-royal">All Works</button>
+                    <button class="hover:text-royal transition">Recent</button>
+                    <button class="hover:text-royal transition">Archives</button>
+                </div>
+            </div>
+            <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 bg-white/5 border-y border-white/5">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- MEMBERSHIP PAGE -->
+        <section id="page-membership" class="page-transition hidden-page pt-32 pb-24 px-6 max-w-7xl mx-auto">
+            <div class="text-center mb-20 max-w-3xl mx-auto">
+                <h2 class="text-5xl md:text-7xl font-serif mb-6 italic text-white">Membership</h2>
+                <p class="text-gray-400 leading-relaxed font-light">
+                    Join an exclusive circle of patrons dedicated to the preservation and growth of West African 
+                    abstract expressionism. Members receive first-look access to collections before they hit galleries.
+                </p>
+            </div>
+            <div id="membership-grid" class="grid md:grid-cols-3 gap-8">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- CONTACT PAGE -->
+        <section id="page-contact" class="page-transition hidden-page pt-32 pb-24 px-6 max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-24">
+                <div>
+                    <h2 class="text-5xl md:text-7xl font-serif mb-8 italic text-center md:text-left text-white">Contacts</h2>
+                    <p class="text-gray-400 text-lg font-light mb-12 text-center md:text-left">
+                        For acquisitions, press kits, or gallery representation inquiries, please reach out via the 
+                        methods below or visit our studios.
+                    </p>
+                    <div class="space-y-10">
+                        <div class="flex items-center gap-6">
+                            <div class="w-14 h-14 bg-white/5 border border-white/10 flex items-center justify-center text-royal"><i data-lucide="mail"></i></div>
+                            <div><p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Direct Email</p><p class="text-xl font-serif">mikeakpanmike@gmail.com</p></div>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="w-14 h-14 bg-white/5 border border-white/10 flex items-center justify-center text-royal"><i data-lucide="phone"></i></div>
+                            <div><p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Inquiries</p><p class="text-xl font-serif">+234 806 288 0737</p></div>
+                        </div>
+
+                        <!-- Permanent Galleries Integrated -->
+                        <div class="pt-10 border-t border-white/10 space-y-10">
+                            <div class="flex items-start gap-6">
+                                <div class="w-14 h-14 bg-white/5 border border-white/10 flex items-center justify-center text-royal shrink-0"><i data-lucide="building"></i></div>
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Uyo Studio</p>
+                                    <p class="text-xl font-serif mb-1">Permanent Gallery</p>
+                                    <p class="text-xs text-gray-500 font-light leading-relaxed">#22b Tabernacle Road, <br/>Uyo, Akwa Ibom State, Nigeria</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-6">
+                                <div class="w-14 h-14 bg-white/5 border border-white/10 flex items-center justify-center text-royal shrink-0"><i data-lucide="map-pin"></i></div>
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Lagos Studio</p>
+                                    <p class="text-xl font-serif mb-1">Permanent Gallery</p>
+                                    <p class="text-xs text-gray-500 font-light leading-relaxed">#1 Alh Lamino Sheila Lane, <br/>Sangotedo, Lekki, Lagos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/[0.03] p-12 border border-white/5">
+                    <form id="contact-form" class="space-y-8" onsubmit="handleContactSubmit(event)">
+                        <div class="space-y-2">
+                            <label class="text-[10px] uppercase tracking-widest text-gray-500">Subject</label>
+                            <select id="contact-subject" class="w-full bg-transparent border-b border-white/20 py-4 focus:outline-none focus:border-royal transition appearance-none text-white">
+                                <option class="bg-dark-grey">Artwork Acquisition</option>
+                                <option class="bg-dark-grey">Press Inquiry</option>
+                                <option class="bg-dark-grey">Membership Enrollment</option>
+                                <option class="bg-dark-grey">Other</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-8">
+                            <div class="space-y-2">
+                                <label class="text-[10px] uppercase tracking-widest text-gray-500">Name</label>
+                                <input type="text" id="contact-name" required class="w-full bg-transparent border-b border-white/20 py-2 focus:outline-none focus:border-royal text-white">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] uppercase tracking-widest text-gray-500">Email</label>
+                                <input type="email" id="contact-email" required class="w-full bg-transparent border-b border-white/20 py-2 focus:outline-none focus:border-royal text-white">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] uppercase tracking-widest text-gray-500">Message</label>
+                            <textarea id="contact-message" rows="4" required class="w-full bg-transparent border-b border-white/20 py-2 focus:outline-none focus:border-royal resize-none text-white"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-5 btn-royal text-[10px] font-bold uppercase tracking-[0.3em]">Deliver Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-20 border-t border-white/5 px-6 bg-black text-white">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
+            <div>
+                <h5 class="text-royal font-serif text-2xl mb-2">Mike Akpan Arts</h5>
+                <p class="text-gray-500 text-[10px] uppercase tracking-widest font-medium">Lagos • London • New York</p>
+            </div>
+            <div class="flex gap-8">
+                <i data-lucide="mail" class="text-gray-600 hover:text-royal cursor-pointer transition-colors" onclick="navigateTo('contact')"></i>
+            </div>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-700">
+                © 2026 Mike Akpan Art Studio.
+            </p>
+        </div>
+    </footer>
+
+    <!-- LIGHTBOX MODAL -->
+    <div id="artwork-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-6 overflow-y-auto">
+        <button class="absolute top-8 right-8 text-white/50 hover:text-white" onclick="closeModal()">
+            <i data-lucide="x" class="w-10 h-10"></i>
+        </button>
+        <div id="modal-content" class="max-w-6xl w-full grid lg:grid-cols-2 bg-dark-grey border border-silver/20 scale-95 opacity-0 transition-all duration-300 shadow-2xl">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- SUCCESS NOTIFICATION -->
+    <div id="success-notification" class="fixed bottom-10 right-10 z-[300] hidden flex items-center gap-4 bg-royal p-6 border border-white/20 shadow-2xl translate-y-20 opacity-0 transition-all duration-500">
+        <div class="w-10 h-10 bg-white/20 flex items-center justify-center rounded-full">
+            <i data-lucide="check" class="text-white w-5 h-5"></i>
+        </div>
+        <div>
+            <p class="text-[10px] uppercase tracking-widest font-bold text-white/70">Message Sent</p>
+            <p class="text-sm font-serif text-white">Delivered to Mike Akpan. Expect a follow-up soon.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- CONSTANTS ---
+        const WHATSAPP_NUMBER = "2348062880737";
+        const ARTIST_EMAIL = "mikeakpanmike@gmail.com";
+
+        // --- DATA ---
+        const biblioData = [
+            { year: "2004", category: "The Arts", title: "An Art of a type", detail: "July 4, 2004 page 23 By Dennis Onwuegbu" },
+            { year: "2001", category: "The Comet", title: "Briefly", detail: "Tuesday, August 14, 2001" },
+            { year: "2001", category: "National Interest", title: "Towards a Greater Tomorrow", detail: "pg30 August 17,2001 By Mike Jimoh" },
+            { year: "2001", category: "Pioneer", title: "Exxon Mobil mounts exhibition", detail: "Friday, August 17-Sunday, August 19,2001 By Charles Ebong" },
+            { year: "2001", category: "The Guardian", title: "Culture, National Rebirth", detail: "Tuesday, August 28, 2001" },
+            { year: "2001", category: "Pioneer", title: "Exhibition ends in Abuja", detail: "Friday, September 7-Sunday, September 9, 2001" },
+            { year: "2001", category: "Daily Champion", title: "Minister advises artists on Africa-American Summit", detail: "Friday, August 31, 2001 By Daniel Idonor" },
+            { year: "2001", category: "The Arts", title: "The art of nation-building", detail: "Monday, September 3,2001 By Okechukwu Uwaezuoke" },
+            { year: "2001", category: "The Anchor", title: "In the Spirit of Nation Building", detail: "Tuesday, August 14,2001, By Chux Okei Ohai" },
+            { year: "2001", category: "The Guardian", title: "Rewards A Greater Nation opens in Abuja", detail: "Tuesday, August 14,2001" },
+            { year: "2001", category: "The Anchor", title: "Visual Art To The Rescue", detail: "Friday, August 31,2001" },
+            { year: "2001", category: "The Arts", title: "The Mobil art Overture", detail: "September 16, 2001, By Helon Habila" },
+            { year: "1999", category: "The Guardian", title: "Musing through the brush", detail: "Tuesday, November 19, 1999; By Ozolua Uhakheme" },
+            { year: "1998", category: "The Nigerian Gong", title: "Visual Arts Feature", detail: "February 26, March 4, 1998, By Jossy Idam" },
+            { year: "1997", category: "The Guardian", title: "Colours of Mike Akpan", detail: "Friday, March 7, 1997 By Sola Balogun" },
+            { year: "1997", category: "The Week", title: "Perfect Harmony", detail: "By Adebayo Obajemu June 18, 1997" },
+            { year: "1997", category: "The Guardian", title: "Everything bows to Akpan’s colour", detail: "Tuesday, March 25, 1997 By Ozolua Uhakheme" },
+            { year: "1997", category: "This day", title: "Mobil’s Day of Harmony", detail: "June 22, 1997 By Kazeem Adeleke" },
+            { year: "1997", category: "The Diet", title: "Striking A Chord With Harmony II", detail: "Monday, June 16, 1997 By Dennis Onwuegbu" },
+            { year: "1997", category: "Harmony 1", title: "Special Publication", detail: "Mike Akpan" },
+            { year: "1997", category: "National Concord", title: "Mike Akpan’s cry for harmony", detail: "Friday, June 20,1997 By Beifoh Osewele" },
+            { year: "1997", category: "This Day", title: "In Harmony with Akpan", detail: "Thursday, May 29, 1997, By Kazeem Adeleke" },
+            { year: "1997", category: "Saturday Punch", title: "Akpan’s Harmony", detail: "June 7, 1997 By Tunde Aremu" },
+            { year: "1997", category: "Sunday Vanguard", title: "Arts Update", detail: "July 13, 1997" },
+            { year: "1997", category: "Sunday Vanguard", title: "Sunday Gallery", detail: "February 23, 1997" },
+            { year: "1997", category: "The Source", title: "Colour Symphonies", detail: "By Henry Uzomah June 16, 1997" },
+            { year: "1997", category: "Vanguard", title: "Harmony 1", detail: "March 9, 1997, By Mike Akpan" },
+            { year: "1997", category: "Saturday Punch", title: "Govt, Urged to encourage artists", detail: "June 21, 1997 By Doyin Adebusuyi" },
+            { year: "1997", category: "The week", title: "Perfect Harmony", detail: "June 16, 1997 By Adebayo Obayemu" },
+            { year: "1997", category: "This Day", title: "Akpan’s Colours of Motion", detail: "March 28, 1997 By Kazeem Adeleke" },
+            { year: "1997", category: "Vanguard", title: "National Newsreel", detail: "Wednesday, March 12, 1997" },
+            { year: "1997", category: "The Guardian", title: "Arts", detail: "Friday, May 30, 1997" },
+            { year: "1997", category: "The Arts", title: "Etching on sand", detail: "March 16, 1997, By Obi Nwakanma" },
+            { year: "1997", category: "Arts and Leisure", title: "Exhibition Review", detail: "March 23, 1997 Page 11 Sunday Concord" },
+            { year: "1997", category: "The Diet", title: "Striking A Chord with Harmony II", detail: "By Dennis Onwuegbu" },
+            { year: "1996", category: "Saturday Champion", title: "Painter with touch of culture", detail: "Saturday, August 31, 1996 By Kate Aman" },
+            { year: "1996", category: "Vanguard", title: "A World of His Own", detail: "Thursday, January 18, 1996 By Yereha Kina" },
+            { year: "1996", category: "Sunday Vanguard", title: "Art is the window to people’s souls", detail: "April 28, 1996 By Obi Nwakanma" },
+            { year: "1996", category: "This Day", title: "Trido-Romantic Art Emerges", detail: "Tuesday, September 3, 1996, By Kazeem Adeleke" },
+            { year: "1996", category: "Saturday Champion", title: "NAF on arts Prospect", detail: "Saturday, October 19, 1996" },
+            { year: "1996", category: "News Watch", title: "Akpan’s World of Colours", detail: "October 28, 1996 By Emmanuel Ugwu" },
+            { year: "1996", category: "Weekend Times", title: "Akpan’s Symphony of Colours", detail: "By Sunny Oribioye" },
+            { year: "1996", category: "Saturday Champion", title: "Arts and Literature", detail: "Saturday, September 7, 1996" },
+            { year: "1996", category: "Sunday Vanguard", title: "Sunday Gallery", detail: "December 8, 1996, By Obi Nwakanma" },
+            { year: "1996", category: "The Post Express", title: "Press Brief", detail: "Tuesday, September 3, 1996" },
+            { year: "1996", category: "Fame", title: "The art of Mike Akpan", detail: "Tuesday, October 1-Monday, October 7, 1996; By Ike Christopher" },
+            { year: "1996", category: "The Post Express", title: "Harvest of colours", detail: "Sunday, September 1, 1996 By Emma Anyamele" },
+            { year: "1996", category: "Third Eye", title: "Mike, rooting art in trado-romantism", detail: "Saturday, 29 June, 1996, By Ayo Elebute" },
+            { year: "1996", category: "National Concord", title: "The Trado-Romantic Art", detail: "Wednesday, September 18. 1996, By Ayo Elebute" },
+            { year: "1990", category: "New York City", title: "Eleven African artists show Oshogbo traits", detail: "July 20, 1990 Page 9, By Liam Nelson" }
+        ];
+
+        const artworks = [
+            { id: 1, title: "Duck and The Duckling", medium: "Oil on Canvas", year: "2000", dimensions: "74 x 59 inches", description: "A whimsical portrayal of a duck and its duckling.", image: "https://i.ibb.co/vCkMvFFQ/duck-and-duckling.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 2, title: "Beautiful Dance Steps to African Guitarist", medium: "Oil on Canvas", year: "2004", dimensions: "64 x 57 inches", description: "Capturing the essence of African dance through vibrant hues.", image: "https://i.ibb.co/KcbM5sLb/beautiful-dance.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 3, title: "Whispering to a Dear Heart", medium: "Oil on Canvas", year: "2023", dimensions: "50 x 40 inches", description: "A gentle expression of affection and connection.", image: "https://i.ibb.co/pjF40Q4q/wispering.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 4, title: "Campus Life", medium: "Oil on Canvas", year: "2004", dimensions: "121 x 54 inches", description: "A depiction of student life and academic pursuits.", image: "https://i.ibb.co/Ngc4G1kt/campus-life.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 5, title: "Water Carrier", medium: "Oil on Canvas", year: "2023", dimensions: "174 x 59 inches", description: "A portrayal of the daily struggles and resilience of those who carry water.", image: "https://i.ibb.co/JRPx8Qhr/waterman.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 6, title: "Community Town Crier", medium: "Oil on Canvas", year: "2023", dimensions: "174 x 57 inches", description: "A depiction of the town crier's role in community life.", image: "https://i.ibb.co/3tmCy3k/towncrier.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 7, title: "Agbala Music Entertainers", medium: "Oil on Canvas", year: "2004", dimensions: "121 x 54 inches", description: "A vibrant portrayal of traditional music performance.", image: "https://i.ibb.co/LhhyKWn0/Gemini-Generated-Image-2zxl882zxl882zxl.png?auto=format&fit=crop&q=80&w=800" },
+            { id: 8, title: "Musik Maker", medium: "Oil on Canvas", year: "2023", dimensions: "176 x 74 inches", description: "A music maker and his tool", image: "https://i.ibb.co/DDGfj6yB/IMG-20260329-044555.png?auto=format&fit=crop&q=80&w=80" },
+            { id: 9, title: "African Drummer", medium: "Oil on Canvas", year: "2004", dimensions: "64 x 57 inches", description: "A portrayal of the rhythmic spirit of African drumming.", image: "https://i.ibb.co/7NbJXkvj/drummer.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 10, title: "Gong Presentation for Drum Beat", medium: "Oil on Canvas", year: "2008", dimensions: "121 x 54 inches", description: "A visual representation of the cultural significance of gong presentations.", image: "https://i.ibb.co/FTZzFcv/gong.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 11, title: "Parents as First Teachers", medium: "Oil on Canvas", year: "2023", dimensions: "100 x 99 inches", description: "A depiction of the important role parents play in their children's education.", image: "https://i.ibb.co/7TpQw9T/family.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 12, title: "Hillside Farm with Promises", medium: "Oil on Canvas", year: "2009", dimensions: "130 x 69 inches", description: "A serene depiction of rural life and the promise of growth.", image: "https://i.ibb.co/W4rm0wQ7/IMG-20260329-043506.png?auto=format&fit=crop&q=80&w=800" },
+            { id: 13, title: "Unity among Birds", medium: "Oil on Canvas", year: "2024", dimensions: "154 x 52 inches", description: "A harmonious scene depicting the unity of various bird species.", image: "https://i.ibb.co/C55js9BF/unity-birds.jpg?auto=format&fit=crop&q=80&w=800" },
+            { id: 14, title: "Celebration of Harvest", medium: "Oil on Canvas", year: "2004", dimensions: "157 x 52 inches", description: "A vibrant portrayal of the joy and abundance of the harvest season.", image: "https://i.ibb.co/WvH5t0bv/Gemini-Generated-Image-q2k7omq2k7omq2k7.png?auto=format&fit=crop&q=80&w=800" },
+            { id: 15, title: "Turn Around Maintenance", medium: "Oil on Canvas", year: "2003", dimensions: "92 x 58 inches", description: "A depiction of the maintenance and care required for a successful turn around.", image: "https://i.ibb.co/hbds470/IMG-20260329-043538.png?auto=format&fit=crop&q=80&w=800" },
+            { id: 16, title: "Golf (Catching them young)", medium: "Oil on Canvas", year: "2009", dimensions: "148 x 68 inches", description: "A scene capturing the spirit of golf, showcasing players in action.", image: "https://i.ibb.co/qLHbqpgx/Gemini-Generated-Image-jj3ozpjj3ozpjj3o.png?auto=format&fit=crop&q=80&w=800" },
+            { id: 17, title: "Sacrifice of African Motherhood", medium: "Oil on Canvas", year: "2023", dimensions: "100 x 99 inches", description: "A powerful depiction of the sacrifices made by African mothers.", image: "https://i.ibb.co/7xck4ykZ/IMG-20260329-043259.png?auto=format&fit=crop&q=80&w=800" },
+            { id: 18, title: "The Reminder of Childhood Dreams", medium: "Oil on Canvas", year: "2006", dimensions: "122 x 96 inches", description: "A nostalgic portrayal of the dreams and aspirations of childhood.", image: "https://i.ibb.co/BVc2Yr9q/1774757534355.png?auto=format&fit=crop&q=80&w=800" },
+            { id: 19, title: "African Village", medium: "Oil on Canvas", year: "2009", dimensions: "219 x 150 inches", description: "A depiction of a traditional African village and its community.", image: "https://i.ibb.co/hRzLQ6Tz/IMG-20260329-043156.png?auto=format&fit=crop&q=80&w=800" },
+            { id: 20, title: "The Journey to the Shore", medium: "Oil on Canvas", year: "2024", dimensions: "206 x 76 inches", description: "A visual representation of the journey to the shore.", image: "https://i.ibb.co/tMNkRND8/IMG-20260329-043106.png?auto=format&fit=crop&q=80&w=800" },
+            { id: 21, title: "Faces of Africa", medium: "Oil on Canvas", year: "2023", dimensions: "50 x 40 inches", description: "A portrait series capturing the diverse faces of Africa.", image: "https://i.ibb.co/HTSyB9MS/IMG-20260329-043009.png?auto=format&fit=crop&get=crop&q=80&w=800" }
+        ];
+
+        const membershipData = [
+            { name: "Patron", price: "$50 / year", benefits: ["Priority access", "Digital newsletter", "Member prints"], accent: "border-white/5", featured: false },
+            { name: "Collector", price: "$250 / year", benefits: ["Studio visits", "10% discount", "Gala invitation"], accent: "border-royal", featured: true },
+            { name: "Vanguard", price: "Custom", benefits: ["Commission priority", "Catalog naming", "VIP previews"], accent: "border-white/5", featured: false }
+        ];
+
+        const soloExhibitions = [
+            { gallery: "Reflection of Life", sponsor: "Exxon Mobil", year: "2004" },
+            { gallery: "Towards a Greater Tomorrow", sponsor: "Exxon Mobil", year: "2001" },
+            { gallery: "Harmony II", sponsor: "Exxon Mobil", year: "1997" },
+            { gallery: "Harmony I", sponsor: "French Cultural Centre", year: "1997" },
+            { gallery: "National Gallery of Modern Art", sponsor: "Lagos", year: "1992" },
+            { gallery: "Gettobar Art Gallery", sponsor: "Togo, Lome", year: "1989" },
+            { gallery: "Joe Musa Gallery", sponsor: "Lagos", year: "1988" }
+        ];
+
+        const groupExhibitions = [
+            { title: "Nigeria Arts Exhibit", location: "Brazil", year: "1988" },
+            { title: "Nigeria Motifs", location: "West Germany", year: "1989" },
+            { title: "Bronx Council on Art", location: "New York", year: "1989" },
+            { title: "Skoto Gallery", location: "New York", year: "1990" },
+            { title: "Black Heritage Gallery", location: "Houston", year: "1990/1995" },
+            { title: "African-Caribbean Art", location: "New York", year: "1991" },
+            { title: "Ikenga Gallery", location: "New Haven", year: "1992" },
+            { title: "Towards a Greater Nation", location: "Abuja", year: "2001" }
+        ];
+
+        // --- NAVIGATION LOGIC ---
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page-transition').forEach(page => {
+                page.classList.add('hidden-page');
+                page.classList.remove('active-page');
+            });
+            
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden-page');
+                targetPage.classList.add('active-page');
+            }
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                const span = link.querySelector('span');
+                if (span) span.style.width = '0%';
+            });
+            
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => {
+                if (link.textContent.trim().toLowerCase() === pageId) {
+                    link.classList.add('active');
+                    const span = link.querySelector('span');
+                    if (span) span.style.width = '100%';
+                }
+            });
+
+            toggleMenu(false);
+            updateNavBackground();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMenu(forceState) {
+            const menu = document.getElementById('mobile-menu');
+            const toggle = document.getElementById('nav-toggle');
+            
+            const isOpen = (typeof forceState !== 'undefined') ? forceState : !toggle.classList.contains('active');
+            
+            if (isOpen) {
+                toggle.classList.add('active');
+                menu.classList.remove('hidden');
+                setTimeout(() => {
+                    menu.classList.remove('opacity-0');
+                }, 10);
+            } else {
+                toggle.classList.remove('active');
+                menu.classList.add('opacity-0');
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                }, 500);
+            }
+        }
+
+        function updateNavBackground() {
+            const nav = document.getElementById('main-nav');
+            const activePage = document.querySelector('.active-page');
+            const activePageId = activePage ? activePage.id : '';
+            
+            if (window.scrollY > 50 || activePageId !== 'page-home') {
+                nav.classList.add('bg-[#1a1a1a]/95', 'backdrop-blur-md', 'border-b', 'border-white/10', 'py-4');
+            } else {
+                nav.classList.remove('bg-[#1a1a1a]/95', 'backdrop-blur-md', 'border-b', 'border-white/10', 'py-4');
+            }
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function renderBibliography() {
+            const grid = document.getElementById('bibliography-grid');
+            grid.innerHTML = biblioData.map((entry, i) => `
+                <div class="group flex flex-col gap-3 border-l border-royal/20 pl-8 py-3 bg-white/[0.03] hover:bg-white/[0.05] hover:border-royal transition-all duration-500 cursor-default">
+                    <div class="flex items-center gap-2 text-royal font-sans font-bold text-[10px] md:text-[11px] uppercase tracking-[0.3em]">
+                        <span class="opacity-50 text-silver">${String(i + 1).padStart(2, '0')}.</span>
+                        <span>${entry.category}</span>
+                    </div>
+                    <h4 class="text-3xl md:text-5xl font-serif-elegant text-royal leading-tight transition-colors duration-500 italic">
+                        "${entry.title}"
+                    </h4>
+                    <p class="text-silver uppercase text-[10px] md:text-[11px] tracking-[0.25em] font-medium mt-1">
+                        ${entry.detail.toUpperCase()}
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = artworks.map(art => `
+                <div class="aspect-square overflow-hidden group relative cursor-pointer" onclick="openArtwork(${art.id})">
+                    <img src="${art.image}" class="w-full h-full object-cover transition duration-1000 group-hover:scale-110" alt="${art.title}">
+                    <div class="absolute inset-0 bg-royal/80 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8">
+                        <h4 class="text-2xl font-serif text-white">${art.title}</h4>
+                        <p class="text-xs text-silver tracking-widest uppercase mt-2">${art.year}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSoloExhibitions() {
+            const list = document.getElementById('solo-exhibitions-list');
+            list.innerHTML = soloExhibitions.map(ex => `
+                <div class="flex justify-between items-center text-sm border-b border-white/5 pb-4 group">
+                    <span class="text-gray-400 group-hover:text-royal transition-colors font-light italic">${ex.gallery} <span class="text-silver/30 non-italic ml-2">(${ex.sponsor})</span></span>
+                    <span class="text-silver font-serif text-lg font-bold">${ex.year}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderGroupExhibitions() {
+            const list = document.getElementById('group-exhibitions-list');
+            if (list) {
+                list.innerHTML = groupExhibitions.map(ex => `
+                    <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                        <span class="text-gray-400 font-light italic">${ex.title}, ${ex.location}</span>
+                        <span class="text-royal font-serif text-lg font-bold">${ex.year}</span>
+                    </div>`).join('');
+            }
+        }
+
+        function renderMembership() {
+            const grid = document.getElementById('membership-grid');
+            grid.innerHTML = membershipData.map(tier => {
+                const message = `Hello Mike Akpan, I am interested in enrolling as a ${tier.name} member. Please provide more information.`;
+                const encodedMessage = encodeURIComponent(message);
+                const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+                return `
+                <div class="p-10 border ${tier.accent} bg-white/[0.02] flex flex-col items-center text-center relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    ${tier.featured ? '<div class="absolute top-0 right-0 bg-royal text-white px-4 py-1 text-[10px] font-bold uppercase tracking-widest">Recommended</div>' : ''}
+                    <h4 class="text-3xl font-serif mb-2 text-white">${tier.name}</h4>
+                    <p class="text-royal font-serif text-xl mb-8 font-bold">${tier.price}</p>
+                    <ul class="space-y-4 mb-12 flex-1">
+                        ${tier.benefits.map(b => `
+                            <li class="text-sm text-silver font-light flex items-center justify-center gap-2">
+                                <i data-lucide="star" style="width:10px;height:10px;" class="text-royal"></i> ${b}
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <a href="${whatsappUrl}" target="_blank" class="w-full block text-center py-4 border ${tier.featured ? 'bg-royal border-royal text-white' : 'border-silver/20 text-silver hover:border-royal hover:text-royal'} text-[10px] uppercase font-bold tracking-widest transition no-underline">
+                        Inquire Enrollment
+                    </a>
+                </div>
+            `}).join('');
+            lucide.createIcons();
+        }
+
+        // --- CONTACT HANDLER ---
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            
+            const subject = document.getElementById('contact-subject').value;
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const message = document.getElementById('contact-message').value;
+
+            // Prepare Email Body
+            const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+            const mailtoUrl = `mailto:${ARTIST_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            // Trigger Email Client
+            window.location.href = mailtoUrl;
+
+            // Show Cool Animated Notification
+            const notification = document.getElementById('success-notification');
+            notification.classList.remove('hidden');
+            
+            // Trigger animation
+            setTimeout(() => {
+                notification.classList.remove('translate-y-20', 'opacity-0');
+                notification.classList.add('translate-y-0', 'opacity-100');
+            }, 50);
+
+            // Hide after delay
+            setTimeout(() => {
+                notification.classList.add('translate-y-20', 'opacity-0');
+                notification.classList.remove('translate-y-0', 'opacity-100');
+                setTimeout(() => notification.classList.add('hidden'), 500);
+            }, 6000);
+
+            // Reset Form
+            document.getElementById('contact-form').reset();
+        }
+
+        // --- MODAL LOGIC ---
+        function openArtwork(id) {
+            const art = artworks.find(a => a.id === id);
+            const modal = document.getElementById('artwork-modal');
+            const content = document.getElementById('modal-content');
+            
+            const message = `Hello Mike Akpan, I am interested in acquiring your artwork: "${art.title}" (${art.year}). Please provide acquisition details.`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+            content.innerHTML = `
+                <div class="aspect-square lg:aspect-auto bg-[#111]">
+                    <img src="${art.image}" class="w-full h-full object-cover" alt="${art.title}">
+                </div>
+                <div class="p-10 md:p-20 flex flex-col justify-center">
+                    <span class="text-royal font-bold text-[10px] tracking-widest uppercase mb-4 opacity-60">${art.year} Collection</span>
+                    <h3 class="text-4xl md:text-5xl font-serif mb-8 text-white">${art.title}</h3>
+                    <div class="space-y-4 mb-10 text-sm text-gray-400 font-light border-y border-white/5 py-8">
+                        <p><span class="text-royal font-bold uppercase text-[10px] tracking-widest mr-4">Medium</span>${art.medium}</p>
+                        <p><span class="text-royal font-bold uppercase text-[10px] tracking-widest mr-4">Dimensions</span>${art.dimensions || '48 x 60 inches'}</p>
+                        <p class="pt-4 leading-relaxed italic text-silver/70 font-medium">"${art.description}"</p>
+                    </div>
+                    <a href="${whatsappUrl}" target="_blank" class="w-full block text-center py-5 btn-royal text-[10px] font-bold uppercase tracking-widest no-underline">
+                        Request Acquisition Details
+                    </a>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('artwork-modal');
+            const content = document.getElementById('modal-content');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // --- INITIALIZATION ---
+        window.addEventListener('scroll', updateNavBackground);
+        
+        window.onload = () => {
+            renderBibliography();
+            renderGallery();
+            renderSoloExhibitions();
+            renderGroupExhibitions();
+            renderMembership();
+            lucide.createIcons();
+            updateNavBackground();
+        };
+    </script>
+</body>
+</html>
